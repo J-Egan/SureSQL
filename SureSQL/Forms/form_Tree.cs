@@ -8,13 +8,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace SureSQL
+namespace SureSQL.Forms
 {
-    public partial class Form1 : Form
+    public partial class form_Tree : Form
     {
-        public Form1()
+        public form_Tree()
         {
             InitializeComponent();
+        }
+
+        private void form_Tree_Load(object sender, EventArgs e)
+        {
+
         }
     }
 }
