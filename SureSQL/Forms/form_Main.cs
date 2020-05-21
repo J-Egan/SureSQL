@@ -1,7 +1,9 @@
 ﻿using SureSQL.Database.MySQL;
+using SureSQL.Parser;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace SureSQL.Forms
@@ -143,6 +145,9 @@ namespace SureSQL.Forms
                                 List<object> views = new List<object>(mySql.GetViews());
                                 Model.AddMultiProperty("views", views);
 
+                                List<object> tables = new List<object>(mySql.GetTables());
+                                Model.AddMultiProperty("tables", tables);
+
                                 //Update Titles
                                 string title; 
                                 Model.GetSingleProperty("SelectedDatabase", out title);
@@ -154,6 +159,10 @@ namespace SureSQL.Forms
                                 f.Parent = tabRoot;
                                 f.Show();
 
+                                //Test Parser
+                                List<string> RawSQL = mySql.RunQuery("SHOW CREATE PROCEDURE  test_procedure;", "Create Procedure");
+                                parser_MySQL parser = new parser_MySQL(Model, RawSQL.ElementAt(0));
+                                parser.ParseSQL();
                             }
                             catch (Exception)
                             {

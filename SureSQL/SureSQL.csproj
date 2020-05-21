@@ -124,7 +124,7 @@
     <Compile Include="Forms\form_Tree.Designer.cs">
       <DependentUpon>form_Tree.cs</DependentUpon>
     </Compile>
-    <Compile Include="IContextSender.cs" />
+    <Compile Include="Interfaces\IContextSender.cs" />
     <Compile Include="MainWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -132,8 +132,11 @@
       <DependentUpon>MainWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Model.cs" />
+    <Compile Include="Parser\parsedProcessor.cs" />
+    <Compile Include="Parser\parser_MySQL.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TreeItem.cs" />
     <EmbeddedResource Include="Forms\form_Main.resx">
       <DependentUpon>form_Main.cs</DependentUpon>
     </EmbeddedResource>

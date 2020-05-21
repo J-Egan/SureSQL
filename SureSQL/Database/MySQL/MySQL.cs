@@ -1,6 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
+using MySqlX.XDevAPI.Relational;
+using Org.BouncyCastle.Crypto.Tls;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -9,7 +12,7 @@ using System.Windows.Forms;
 
 namespace SureSQL.Database.MySQL
 {
-    class MySQL
+    public class MySQL
     {
         private MySqlConnection Connection;
         public string Server { get; set; }
@@ -21,6 +24,8 @@ namespace SureSQL.Database.MySQL
         private string Query_GetStoredProcedures = "SHOW PROCEDURE STATUS";
         private string Query_GetFunctions = "SHOW FUNCTION STATUS";
         private string Query_GetViews = "SHOW FULL TABLES WHERE table_type = 'VIEW'";
+
+        private string Query_GetProcedureSQL = "SHOW CREATE PROCEDURE ";
 
         public MySQL() { }
 
@@ -87,7 +92,6 @@ namespace SureSQL.Database.MySQL
                 return false;
             }
         }
-
         //Close connection
         private bool CloseConnection()
         {
@@ -154,6 +158,102 @@ namespace SureSQL.Database.MySQL
             return results;
         }
 
+        public List<string> RunQuery(string query, string FieldName)
+        {
+            List<string> results = new List<string>();
+            //open connection
+            this.OpenConnection();
+            //run query
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(query, this.Connection);
+                MySqlDataReader DataReader = cmd.ExecuteReader();
+
+                DataTable dTable = new DataTable();
+                dTable.Load(DataReader);
+
+                if (dTable.Columns.Contains(FieldName))
+                {
+                    int colnum = dTable.Columns.IndexOf(FieldName);
+                    foreach (DataRow row in dTable.Rows)
+                    {
+                        results.Add((string)row.ItemArray[colnum]);
+                    }
+                }
+
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
+                    case 0:
+                        MessageBox.Show("Cannot connect to server.  Contact administrator");
+                        break;
+
+                    case 1045:
+                        MessageBox.Show("Invalid username/password, please try again");
+                        break;
+
+                    case 1064:
+                        MessageBox.Show("You have an error in your SQL syntax;");
+                        break;
+                }
+                throw;
+            }
+            //close connection
+            this.CloseConnection();
+
+            //return result set
+            return results;
+        }
+
+        //TODO: Implement field name searches
+        public List<string> RunQuery(string query, List<string> FieldNames)
+        {
+            List<string> results = new List<string>();
+            //open connection
+            this.OpenConnection();
+            //run query
+            try
+            {
+                MySqlCommand cmd = new MySqlCommand(query, this.Connection);
+                MySqlDataReader DataReader = cmd.ExecuteReader();
+
+                while (DataReader.Read())
+                {
+                    string data = "";
+                    for (int i = 0; i < DataReader.FieldCount; i++)
+                    {
+                        data += DataReader.GetValue(i);
+                    }
+                    results.Add(data);
+                }
+            }
+            catch (MySqlException ex)
+            {
+                switch (ex.Number)
+                {
+                    case 0:
+                        MessageBox.Show("Cannot connect to server.  Contact administrator");
+                        break;
+
+                    case 1045:
+                        MessageBox.Show("Invalid username/password, please try again");
+                        break;
+
+                    case 1064:
+                        MessageBox.Show("You have an error in your SQL syntax;");
+                        break;
+                }
+                throw;
+            }
+            //close connection
+            this.CloseConnection();
+
+            //return result set
+            return results;
+        }
+
         public void updateDatabase()
         {
             Query_GetStoredProcedures = "USE " + this.Database + ";" + Query_GetStoredProcedures;
@@ -161,21 +261,31 @@ namespace SureSQL.Database.MySQL
             Query_GetFunctions = "USE " + this.Database + ";" + Query_GetFunctions;
             Query_GetViews = "USE " + this.Database + ";" + Query_GetViews;
         }
+
         public List<string> GetProcedures()
         {
-            return this.RunQuery(Query_GetStoredProcedures);
+            return this.RunQuery(Query_GetStoredProcedures, "Name");
         }
+
         public List<string> GetTables()
         {
-            return this.RunQuery(Query_GetTables);
+            return this.RunQuery(Query_GetTables, "Tables_in_" + this.Database);
         }
+
         public List<string> GetFunctions()
         {
-            return this.RunQuery(Query_GetFunctions);
+            return this.RunQuery(Query_GetFunctions, "Name");
         }
+
         public List<string> GetViews()
         {
-            return this.RunQuery(Query_GetViews);
+            return this.RunQuery(Query_GetViews, "Tables_in_" + this.Database);
+        }
+
+        public string GetSQL_Procedure(string ProcedureName)
+        {
+            string query = this.Query_GetProcedureSQL + ProcedureName;
+            return this.RunQuery(query).ElementAtOrDefault(0);
         }
     }
 }
