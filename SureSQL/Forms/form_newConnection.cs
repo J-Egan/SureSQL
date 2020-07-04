@@ -33,25 +33,18 @@ namespace SureSQL.Forms
             //check credentials have been entered
             if (txt_Server.Text.Length > 0)
             {
-                if (txt_Username.Text.Length > 0)
-                {
-                    //Attempt DB connection
-                    string server, username, password;
-                    server = txt_Server.Text;
-                    username = txt_Username.Text;
-                    password = txt_Password.Text;
+                //Attempt DB connection
+                string server, username, password;
+                server = txt_Server.Text;
+                username = txt_Username.Text;
+                password = txt_Password.Text;
 
-                    Model.AddSingleProperty("server", server);
-                    Model.AddSingleProperty("username", username);
-                    Model.AddSingleProperty("password", password);
+                Model.AddSingleProperty("server", server);
+                Model.AddSingleProperty("username", username);
+                Model.AddSingleProperty("password", password);
 
-                    Sender.ContextUpdate();
-                    this.Close();
-                }
-                else
-                {
-                    lbl_Error.Text += "Enter Username";
-                }
+                Sender.ContextUpdate();
+                this.Close();
             }
             else
             {

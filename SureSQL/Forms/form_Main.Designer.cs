@@ -136,20 +136,21 @@
             this.menu_TSQL,
             this.menu_MySQL});
             this.menu_NewConnection.Name = "menu_NewConnection";
-            this.menu_NewConnection.Size = new System.Drawing.Size(163, 22);
+            this.menu_NewConnection.Size = new System.Drawing.Size(180, 22);
             this.menu_NewConnection.Text = "New Connection";
             this.menu_NewConnection.Click += new System.EventHandler(this.menu_NewConnection_Click);
             // 
             // menu_TSQL
             // 
             this.menu_TSQL.Name = "menu_TSQL";
-            this.menu_TSQL.Size = new System.Drawing.Size(112, 22);
+            this.menu_TSQL.Size = new System.Drawing.Size(180, 22);
             this.menu_TSQL.Text = "T-SQL";
+            this.menu_TSQL.Click += new System.EventHandler(this.menu_TSQL_Click);
             // 
             // menu_MySQL
             // 
             this.menu_MySQL.Name = "menu_MySQL";
-            this.menu_MySQL.Size = new System.Drawing.Size(112, 22);
+            this.menu_MySQL.Size = new System.Drawing.Size(180, 22);
             this.menu_MySQL.Text = "MySQL";
             this.menu_MySQL.Click += new System.EventHandler(this.menu_MySQL_Click);
             // 

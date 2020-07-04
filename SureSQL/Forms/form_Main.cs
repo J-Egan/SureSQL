@@ -1,6 +1,8 @@
 ﻿using SureSQL.Database.MySQL;
+using SureSQL.Database.TSQL;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -163,6 +165,34 @@ namespace SureSQL.Forms
                         break;
 
                     case "TSQL":
+                        if (Model.CheckSingleProperty("SelectedDatabase"))
+                        {
+                            //Connect to DB and get all data
+                            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder("Data Source = (local); Integrated Security = True");
+                            TSQL TSQL = new TSQL(builder);
+
+                            //Update Titles
+                            string title;
+                            Model.GetSingleProperty("SelectedDatabase", out title);
+                            lbl_CurrentDB.Text = title;
+
+                            TSQL.SetSchema(title);
+
+                            List<object> storedProcedures = new List<object>(TSQL.GetProcedures());
+                            Model.AddMultiProperty("storedProcedures", storedProcedures);
+
+                            List<object> functions = new List<object>(TSQL.GetFunctions());
+                            Model.AddMultiProperty("functions", functions);
+
+                            List<object> views = new List<object>(TSQL.GetViews());
+                            Model.AddMultiProperty("views", views);
+
+                            //Update form with new information
+                            Form f = new form_Root(Model);
+                            f.TopLevel = false;
+                            f.Parent = tabRoot;
+                            f.Show();
+                        }
                         break;
 
                     default:
@@ -185,5 +215,23 @@ namespace SureSQL.Forms
 
         }
 
+        private void menu_TSQL_Click(object sender, EventArgs e)
+        {
+            //TODO - Add menu to connect remote
+
+            Model.AddSingleProperty("SQL", "TSQL");
+
+            //will attempt to connect to local machine,
+            SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder("Data Source = (local); Integrated Security = True");
+            TSQL TSQL = new TSQL(builder);
+
+            //get list of databases
+            List<object> databases = new List<object>(TSQL.GetDatabases());
+            Model.AddMultiProperty("databases", databases);
+
+            //Update form with new information
+            Form f = new form_SelectDatabase(Model, this);
+            f.Show();
+        }
     }
 }
